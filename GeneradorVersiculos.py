@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-Generador de Versículos Bíblicos
+Aliento para vivir un dia más
 ================================
 
 Un programa interactivo para generar versículos bíblicos aleatorios
 con funcionalidades avanzadas como historial, favoritos, y búsqueda por categorías.
+Usado no solo como un proyecto más, sino también como un alivio o respiro en momentos
+dificiles, ansiedad durante el trabajo o depresión. 
 
 Autor: Jeshua Salazar
 Fecha: 2025
-Version: 2.0
+Version: 1.5
 """
 
 import random
@@ -18,9 +20,10 @@ from datetime import datetime
 from typing import List, Dict, Optional
 import re
 
+
+
 class GeneradorVersiculos:
-    """Clase principal para manejar la generación y gestión de versículos bíblicos."""
-    
+
     def __init__(self):
         self.versiculos = {
             "fortaleza": [
@@ -51,7 +54,6 @@ class GeneradorVersiculos:
         self.favoritos = self._cargar_favoritos()
     
     def _cargar_historial(self) -> List[Dict]:
-        """Carga el historial de versículos desde un archivo JSON."""
         try:
             if os.path.exists(self.historial_archivo):
                 with open(self.historial_archivo, 'r', encoding='utf-8') as f:
@@ -61,7 +63,6 @@ class GeneradorVersiculos:
         return []
     
     def _cargar_favoritos(self) -> List[Dict]:
-        """Carga la lista de versículos favoritos desde un archivo JSON."""
         try:
             if os.path.exists(self.favoritos_archivo):
                 with open(self.favoritos_archivo, 'r', encoding='utf-8') as f:
@@ -71,7 +72,6 @@ class GeneradorVersiculos:
         return []
     
     def _guardar_historial(self) -> None:
-        """Guarda el historial en un archivo JSON."""
         try:
             with open(self.historial_archivo, 'w', encoding='utf-8') as f:
                 json.dump(self.historial, f, ensure_ascii=False, indent=2)
@@ -79,7 +79,6 @@ class GeneradorVersiculos:
             print(f"Error al guardar historial: {e}")
     
     def _guardar_favoritos(self) -> None:
-        """Guarda los favoritos en un archivo JSON."""
         try:
             with open(self.favoritos_archivo, 'w', encoding='utf-8') as f:
                 json.dump(self.favoritos, f, ensure_ascii=False, indent=2)
@@ -87,15 +86,6 @@ class GeneradorVersiculos:
             print(f"Error al guardar favoritos: {e}")
     
     def obtener_versiculo_aleatorio(self, categoria: Optional[str] = None) -> Dict:
-        """
-        Obtiene un versículo aleatorio de una categoría específica o de todas.
-        
-        Args:
-            categoria: Categoría específica o None para cualquier categoría
-            
-        Returns:
-            Diccionario con el versículo, referencia y categoría
-        """
         if categoria and categoria in self.versiculos:
             versiculo = random.choice(self.versiculos[categoria])
             versiculo['categoria'] = categoria
@@ -104,27 +94,16 @@ class GeneradorVersiculos:
             versiculo = random.choice(self.versiculos[categoria_elegida])
             versiculo['categoria'] = categoria_elegida
         
-        # Agregar TimeStamp
         versiculo['fecha'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
-        # Agrega al historial
         self.historial.append(versiculo.copy())
-        if len(self.historial) > 100:  # Mantener solo los últimos 100
+        if len(self.historial) > 100:
             self.historial = self.historial[-100:]
         self._guardar_historial()
         
         return versiculo
     
     def buscar_versiculos(self, termino: str) -> List[Dict]:
-        """
-        Busca versículos que contengan un término específico.
-        
-        Args:
-            termino: Término a buscar en el texto del versículo
-            
-        Returns:
-            Lista de versículos que contienen el término
-        """
         resultados = []
         termino_lower = termino.lower()
         
@@ -139,16 +118,6 @@ class GeneradorVersiculos:
         return resultados
     
     def agregar_favorito(self, versiculo: Dict) -> bool:
-        """
-        Agrega un versículo a la lista de favoritos.
-        
-        Args:
-            versiculo: Diccionario con el versículo a agregar
-            
-        Returns:
-            True si se agregó exitosamente, False si ya existía
-        """
-        # Verificar si ya existe
         for fav in self.favoritos:
             if (fav['texto'] == versiculo['texto'] and 
                 fav['referencia'] == versiculo['referencia']):
@@ -159,15 +128,6 @@ class GeneradorVersiculos:
         return True
     
     def eliminar_favorito(self, indice: int) -> bool:
-        """
-        Elimina un versículo de la lista de favoritos.
-        
-        Args:
-            indice: Índice del versículo a eliminar
-            
-        Returns:
-            True si se eliminó exitosamente, False si el índice es inválido
-        """
         if 0 <= indice < len(self.favoritos):
             self.favoritos.pop(indice)
             self._guardar_favoritos()
@@ -175,12 +135,6 @@ class GeneradorVersiculos:
         return False
     
     def obtener_estadisticas(self) -> Dict:
-        """
-        Obtiene estadísticas sobre el uso del generador.
-        
-        Returns:
-            Diccionario con estadísticas de uso
-        """
         stats = {
             'total_versiculos_vistos': len(self.historial),
             'favoritos_guardados': len(self.favoritos),
@@ -190,7 +144,6 @@ class GeneradorVersiculos:
         }
         
         if self.historial:
-            # Categoría más vista
             categorias_conteo = {}
             for item in self.historial:
                 cat = item.get('categoria', 'desconocida')
@@ -219,12 +172,6 @@ def mostrar_menu() -> None:
     print("="*60)
 
 def mostrar_versiculo(versiculo: Dict) -> None:
-    """
-    Muestra un versículo de forma elegante.
-    
-    Args:
-        versiculo: Diccionario con la información del versículo
-    """
     print("\n" + "─"*50)
     print(f"📖 {versiculo['texto']}")
     print(f"   — {versiculo['referencia']} —")
@@ -234,7 +181,6 @@ def mostrar_versiculo(versiculo: Dict) -> None:
     print("─"*50)
 
 def mostrar_ayuda() -> None:
-    """Muestra información de ayuda sobre el programa."""
     print("\n" + "="*60)
     print("                        📋 AYUDA")
     print("="*60)
@@ -248,7 +194,6 @@ def mostrar_ayuda() -> None:
     print("="*60)
 
 def main():
-    """Función principal del programa."""
     generador = GeneradorVersiculos()
     
     print("🌟 ¡Bienvenido al Generador de Versículos Bíblicos! 🌟")
@@ -267,7 +212,6 @@ def main():
                 versiculo = generador.obtener_versiculo_aleatorio()
                 mostrar_versiculo(versiculo)
                 
-                # Opción de agregar a favoritos
                 agregar = input("\n⭐ ¿Agregar a favoritos? (s/n): ").strip().lower()
                 if agregar == 's':
                     if generador.agregar_favorito(versiculo):
@@ -320,7 +264,6 @@ def main():
                         print(f"\n{i}.")
                         mostrar_versiculo(versiculo)
                     
-                    # Opción de eliminar favorito
                     eliminar = input("\n🗑️  ¿Eliminar algún favorito? (número o 'n'): ").strip()
                     if eliminar.isdigit():
                         indice = int(eliminar) - 1
