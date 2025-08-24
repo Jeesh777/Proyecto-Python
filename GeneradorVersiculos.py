@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Aliento para vivir un dia más
+Aliento para un dia más
 ================================
 
 Un programa interactivo para generar versículos bíblicos aleatorios
@@ -155,4 +155,161 @@ class GeneradorVersiculos:
             stats['ultimo_versiculo_visto'] = self.historial[-1]['fecha']
         
         return stats
+
+def mostrar_menu() -> None:
+    """Muestra el menú principal de opciones."""
+    print("\n" + "="*60)
+    print("           🙏 GENERADOR DE VERSÍCULOS BÍBLICOS 🙏")
+    print("="*60)
+    print("1. 📖 Versículo aleatorio")
+    print("2. 🎯 Versículo por categoría")
+    print("3. 🔍 Buscar versículos")
+    print("4. ⭐ Ver favoritos")
+    print("5. 📚 Ver historial")
+    print("6. 📊 Estadísticas")
+    print("7. ❓ Ayuda")
+    print("0. 🚪 Salir")
+    print("="*60)
+
+def mostrar_versiculo(versiculo: Dict) -> None:
+    print("\n" + "─"*50)
+    print(f"📖 {versiculo['texto']}")
+    print(f"   — {versiculo['referencia']} —")
+    print(f"🏷️  Categoría: {versiculo.get('categoria', 'N/A').title()}")
+    if 'fecha' in versiculo:
+        print(f"🕐 Fecha: {versiculo['fecha']}")
+    print("─"*50)
+
+def mostrar_ayuda() -> None:
+    print("\n" + "="*60)
+    print("                        📋 AYUDA")
+    print("="*60)
+    print("🔹 Versículo aleatorio: Obtiene un versículo al azar")
+    print("🔹 Por categoría: Elige entre fortaleza, esperanza, consuelo, amor")
+    print("🔹 Buscar: Encuentra versículos que contengan palabras específicas")
+    print("🔹 Favoritos: Guarda y administra tus versículos preferidos")
+    print("🔹 Historial: Ve los últimos versículos que has consultado")
+    print("🔹 Estadísticas: Información sobre tu uso del programa")
+    print("\n💡 Tip: Todos los datos se guardan automáticamente")
+    print("="*60)
+
+def main():
+    generador = GeneradorVersiculos()
+    
+    print("🌟 ¡Bienvenido al Generador de Versículos Bíblicos! 🌟")
+    
+    while True:
+        mostrar_menu()
+        
+        try:
+            opcion = input("\n👉 Selecciona una opción: ").strip()
+            
+            if opcion == "0":
+                print("\n🙏 ¡Que Dios te bendiga! Hasta luego.")
+                break
+            
+            elif opcion == "1":
+                versiculo = generador.obtener_versiculo_aleatorio()
+                mostrar_versiculo(versiculo)
+                
+                agregar = input("\n⭐ ¿Agregar a favoritos? (s/n): ").strip().lower()
+                if agregar == 's':
+                    if generador.agregar_favorito(versiculo):
+                        print("✅ Agregado a favoritos!")
+                    else:
+                        print("ℹ️  Ya está en favoritos.")
+            
+            elif opcion == "2":
+                print("\n🎯 Categorías disponibles:")
+                categorias = list(generador.versiculos.keys())
+                for i, cat in enumerate(categorias, 1):
+                    print(f"{i}. {cat.title()}")
+                
+                try:
+                    cat_opcion = int(input("\nSelecciona categoría (número): ")) - 1
+                    if 0 <= cat_opcion < len(categorias):
+                        categoria = categorias[cat_opcion]
+                        versiculo = generador.obtener_versiculo_aleatorio(categoria)
+                        mostrar_versiculo(versiculo)
+                        
+                        agregar = input("\n⭐ ¿Agregar a favoritos? (s/n): ").strip().lower()
+                        if agregar == 's':
+                            if generador.agregar_favorito(versiculo):
+                                print("✅ Agregado a favoritos!")
+                            else:
+                                print("ℹ️  Ya está en favoritos.")
+                    else:
+                        print("❌ Opción inválida.")
+                except ValueError:
+                    print("❌ Por favor, ingresa un número válido.")
+            
+            elif opcion == "3":
+                termino = input("\n🔍 Ingresa el término a buscar: ").strip()
+                if termino:
+                    resultados = generador.buscar_versiculos(termino)
+                    if resultados:
+                        print(f"\n🎯 Se encontraron {len(resultados)} resultados:")
+                        for i, versiculo in enumerate(resultados, 1):
+                            print(f"\n{i}.")
+                            mostrar_versiculo(versiculo)
+                    else:
+                        print("❌ No se encontraron versículos con ese término.")
+                else:
+                    print("❌ Por favor, ingresa un término de búsqueda.")
+            
+            elif opcion == "4":
+                if generador.favoritos:
+                    print(f"\n⭐ Tus favoritos ({len(generador.favoritos)}):")
+                    for i, versiculo in enumerate(generador.favoritos, 1):
+                        print(f"\n{i}.")
+                        mostrar_versiculo(versiculo)
+                    
+                    eliminar = input("\n🗑️  ¿Eliminar algún favorito? (número o 'n'): ").strip()
+                    if eliminar.isdigit():
+                        indice = int(eliminar) - 1
+                        if generador.eliminar_favorito(indice):
+                            print("✅ Favorito eliminado.")
+                        else:
+                            print("❌ Número inválido.")
+                else:
+                    print("\n💭 No tienes favoritos guardados aún.")
+            
+            elif opcion == "5":
+                if generador.historial:
+                    print(f"\n📚 Historial (últimos 10):")
+                    for i, versiculo in enumerate(generador.historial[-10:], 1):
+                        print(f"\n{i}.")
+                        mostrar_versiculo(versiculo)
+                else:
+                    print("\n💭 No hay historial disponible.")
+            
+            elif opcion == "6":
+                stats = generador.obtener_estadisticas()
+                print("\n📊 ESTADÍSTICAS")
+                print("="*40)
+                print(f"📖 Total de versículos vistos: {stats['total_versiculos_vistos']}")
+                print(f"⭐ Favoritos guardados: {stats['favoritos_guardados']}")
+                print(f"🏷️  Categorías disponibles: {stats['categorias_disponibles']}")
+                if stats['categoria_mas_vista']:
+                    print(f"🎯 Categoría más vista: {stats['categoria_mas_vista'].title()}")
+                if stats['ultimo_versiculo_visto']:
+                    print(f"🕐 Último versículo visto: {stats['ultimo_versiculo_visto']}")
+                print("="*40)
+            
+            elif opcion == "7":
+                mostrar_ayuda()
+            
+            else:
+                print("❌ Opción no válida. Por favor, selecciona un número del menú.")
+        
+        except KeyboardInterrupt:
+            print("\n\n🙏 ¡Que Dios te bendiga! Hasta luego.")
+            break
+        except Exception as e:
+            print(f"❌ Error inesperado: {e}")
+        
+        input("\n📱 Presiona Enter para continuar...")
+
+if __name__ == "__main__":
+    main()
 
