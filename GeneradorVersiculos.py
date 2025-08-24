@@ -159,7 +159,7 @@ class GeneradorVersiculos:
 def mostrar_menu() -> None:
     """Muestra el menú principal de opciones."""
     print("\n" + "="*60)
-    print("           🙏 GENERADOR DE VERSÍCULOS BÍBLICOS 🙏")
+    print("           🙏 ALIENTO PARA UN DÍA MÁS 🙏")
     print("="*60)
     print("1. 📖 Versículo aleatorio")
     print("2. 🎯 Versículo por categoría")
